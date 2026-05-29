@@ -25,6 +25,5 @@ Open <http://localhost:3000>.
 - `src/app/blog/` — blog index and post route.
 - `content/*.mdx` — blog posts.
 
-## Credits
 
-Originally forked from [dillionverma/portfolio](https://github.com/dillionverma/portfolio); the design has since been rewritten end-to-end.
+

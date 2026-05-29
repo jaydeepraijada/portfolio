@@ -59,7 +59,7 @@ export const DATA = {
   projects: [
     {
       title: "SHADE-GYM",
-      href: "https://github.com/Mayankpratapsingh022/SHADE-GYM",
+      href: "https://github.com/jaydeepraijada/SHADE-GYM",
       dates: "April 2026",
       description:
         "**Top 100 at the HuggingFace × Meta OpenEnv Hackathon, Bangalore.** Built an RL environment where a small monitor model learns to catch a frontier attacker (DeepSeek-R1) attempting hidden harmful behaviors across 9 enterprise scenarios. Every reward is a plain Python check, with no LLM-as-judge anywhere in the loop. After 10 reward design iterations, a simple linear reward beat the more elaborate composed one. Trained a Qwen-2.5-1.5B LoRA monitor from random performance (**AUROC 0.500**) to strong detection (**0.893**, Recall 0.88, FPR 0.12), closing about 40% of the gap to Gemini-2.5-Pro at under 0.1% of its per-call cost.",
@@ -76,7 +76,7 @@ export const DATA = {
       links: [
         {
           type: "GitHub",
-          href: "https://github.com/Mayankpratapsingh022/SHADE-GYM",
+          href: "https://github.com/jaydeepraijada/SHADE-GYM",
         },
         {
           type: "Model",

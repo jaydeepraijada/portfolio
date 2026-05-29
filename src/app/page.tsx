@@ -124,6 +124,12 @@ export default function V2Page() {
           </span>
           <nav className="flex items-center gap-5 text-sm text-muted-foreground">
             <Link
+              href="/services"
+              className="hover:text-foreground transition-colors"
+            >
+              services
+            </Link>
+            <Link
               href="/blog"
               className="hover:text-foreground transition-colors"
             >

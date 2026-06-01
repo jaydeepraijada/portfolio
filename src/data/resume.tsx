@@ -85,19 +85,20 @@ export const DATA = {
       ],
     },
     {
-      title: "Post-Training Experiments",
+      title: "Post-Training Pipeline (CPT → SFT → DPO)",
       href: "https://github.com/jaydeepraijada/post-training-experiments",
       dates: "May 2026",
       description:
-        "Continued pre-training of SmolLM-135M on 138 arXiv ML papers (2024–2026) using QLoRA (rank 32) via Unsloth. Trained on an RTX 4090 in about 14 minutes. On held-out papers: **−20.1% perplexity** (22.97 to 18.36), **+19.7% ROUGE-1**, **+25.4% ROUGE-L**, **+37.5% BLEU**. Two takeaways: LoRA outperforms full fine-tuning on small datasets thanks to its regularization, and rank saturates at r≥16, which suggests the data (not the rank) is the bottleneck. Adapter (9.7M trainable params, 6.77% of total) published to HuggingFace.",
+        "The full post-training stack run end-to-end on a single sub-1B model, SmolLM-135M, with each stage measured. **CPT:** continued pre-training on 138 arXiv ML papers via QLoRA (rank 32, Unsloth) — on held-out papers, **−20.1% perplexity** (22.97 to 18.36), **+25.4% ROUGE-L**, **+37.5% BLEU**; rank saturates at r≥16, so the data (not the rank) is the bottleneck. **SFT:** instruction-tuned on a 300K-pair dataset generated from arXiv papers (7 stochastic task types, structured decoding via Outlines), using ChatML and response-only loss masking. **DPO:** preference-aligned on 151K LLM-judged pairs (β=0.1), which lifted held-out reward accuracy from **0.50 to 0.72** while *preserving* generation diversity — an alignment gain with no mode collapse. All checkpoints published to HuggingFace.",
       technologies: [
         "CPT",
-        "LoRA",
-        "QLoRA",
+        "SFT",
+        "DPO",
+        "Preference Optimization",
+        "LoRA / QLoRA",
         "Unsloth",
+        "TRL",
         "SmolLM-135M",
-        "Domain Adaptation",
-        "HuggingFace",
       ],
       links: [
         {
@@ -105,7 +106,11 @@ export const DATA = {
           href: "https://github.com/jaydeepraijada/post-training-experiments",
         },
         {
-          type: "Model",
+          type: "DPO Model",
+          href: "https://huggingface.co/JaydeepR/SmolLM-135M-neuraltxt-dpo-v1",
+        },
+        {
+          type: "CPT Model",
           href: "https://huggingface.co/JaydeepR/SmolLM-135M-CPT-LoRA-r32",
         },
       ],

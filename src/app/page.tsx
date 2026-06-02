@@ -119,7 +119,7 @@ export default function V2Page() {
       <div className="mx-auto max-w-2xl px-6 py-16 sm:py-24">
         {/* Header */}
         <header className="flex items-center justify-between mb-16">
-          <span className="text-sm font-medium tracking-tight text-foreground">
+          <span className="font-display text-lg font-medium tracking-tight text-foreground">
             jaydeep raijada
           </span>
           <nav className="flex items-center gap-5 text-sm text-muted-foreground">
@@ -155,7 +155,7 @@ export default function V2Page() {
               className="size-20 rounded-full object-cover ring-1 ring-border shrink-0"
             />
             <div className="flex flex-col gap-3 min-w-0">
-              <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight leading-tight">
+              <h1 className="font-display text-4xl sm:text-5xl font-medium tracking-tight leading-[1.05]">
                 Hi, I&apos;m Jaydeep
               </h1>
               <p className="text-[15px] leading-relaxed text-muted-foreground text-pretty">
@@ -222,7 +222,7 @@ export default function V2Page() {
               {DATA.research.map((r) => (
                 <div key={r.title} className="flex flex-col gap-3">
                   <div className="flex items-baseline justify-between gap-4">
-                    <h3 className="text-[15px] font-medium text-foreground text-pretty">
+                    <h3 className="font-display text-lg font-medium text-foreground text-pretty">
                       {r.title}
                     </h3>
                     <div className="text-xs tabular-nums text-muted-foreground shrink-0">
@@ -270,7 +270,7 @@ export default function V2Page() {
               {DATA.projects.map((p) => (
                 <article key={p.title} className="flex flex-col gap-3">
                   <div className="flex items-baseline justify-between gap-4">
-                    <h3 className="text-[15px] font-medium text-foreground tracking-tight">
+                    <h3 className="font-display text-lg font-medium text-foreground tracking-tight">
                       <ExtLink
                         href={p.href}
                         className="decoration-transparent hover:decoration-foreground"

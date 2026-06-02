@@ -12,7 +12,7 @@ export const DATA = {
     email: "j.raijada25@gmail.com",
     social: {
       GitHub: { url: "https://github.com/jaydeepraijada" },
-      LinkedIn: { url: "https://linkedin.com/in/jaydeepraijada" },
+      LinkedIn: { url: "https://www.linkedin.com/in/jaydeep-raijada-b8a735119/" },
       X: { url: "https://x.com/Jaydeep_25" },
       Substack: { url: "https://jaydeepraijada.substack.com" },
     },

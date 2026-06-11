@@ -121,6 +121,16 @@
     @apply bg-background text-foreground;
   }
 
+  /* Fraunces defaults to its max optical size (144), which draws a heavily
+     swashed, low-contrast "J" — dial the optical size down for a sturdier,
+     more conventional letterform on display headings. */
+  .font-display,
+  .prose h1,
+  .prose h2,
+  .prose h3 {
+    font-variation-settings: "opsz" 30;
+  }
+
   /* Shiki dual theme support */
   .shiki,
   .shiki span {

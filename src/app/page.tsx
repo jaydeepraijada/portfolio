@@ -6,6 +6,7 @@ import { DATA } from "@/data/resume";
 
 const socials = [
   { label: "github", url: DATA.contact.social.GitHub.url },
+  { label: "hugging face", url: DATA.contact.social.HuggingFace.url },
   { label: "x", url: DATA.contact.social.X.url },
   { label: "linkedin", url: DATA.contact.social.LinkedIn.url },
   { label: "substack", url: DATA.contact.social.Substack.url },
@@ -119,7 +120,7 @@ export default function V2Page() {
       <div className="mx-auto max-w-2xl px-6 py-16 sm:py-24">
         {/* Header */}
         <header className="flex items-center justify-between mb-16">
-          <span className="font-display text-lg font-medium tracking-tight text-foreground">
+          <span className="text-lg font-medium tracking-tight text-foreground">
             jaydeep raijada
           </span>
           <nav className="flex items-center gap-5 text-sm text-muted-foreground">
@@ -155,7 +156,7 @@ export default function V2Page() {
               className="size-20 rounded-full object-cover ring-1 ring-border shrink-0"
             />
             <div className="flex flex-col gap-3 min-w-0">
-              <h1 className="font-display text-4xl sm:text-5xl font-medium tracking-tight leading-[1.05]">
+              <h1 className="text-4xl sm:text-5xl font-medium tracking-tight leading-[1.05]">
                 Hi, I&apos;m Jaydeep
               </h1>
               <p className="text-[15px] leading-relaxed text-muted-foreground text-pretty">
@@ -365,7 +366,10 @@ export default function V2Page() {
               . Or find me on{" "}
               <ExtLink href={DATA.contact.social.X.url}>X</ExtLink>,{" "}
               <ExtLink href={DATA.contact.social.GitHub.url}>GitHub</ExtLink>,{" "}
-              and{" "}
+              <ExtLink href={DATA.contact.social.HuggingFace.url}>
+                Hugging Face
+              </ExtLink>
+              , and{" "}
               <ExtLink href={DATA.contact.social.LinkedIn.url}>
                 LinkedIn
               </ExtLink>

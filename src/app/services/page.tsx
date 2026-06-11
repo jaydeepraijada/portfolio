@@ -242,7 +242,7 @@ export default function ServicesPage() {
                 <ArrowUpRight className="size-3" aria-hidden />
               </ExtLink>
               <ExtLink
-                href="https://huggingface.co/JaydeepR"
+                href={DATA.contact.social.HuggingFace.url}
                 className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
               >
                 Hugging Face

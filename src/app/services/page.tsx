@@ -6,11 +6,11 @@ import { DATA } from "@/data/resume";
 export const metadata: Metadata = {
   title: "Services",
   description:
-    "AI engineering services — model fine-tuning & evals, RAG, AI agents, and automation. Built and shipped by Jaydeep Raijada.",
+    "AI engineering services: model fine-tuning & evals, RAG, AI agents, and automation. Built and shipped by Jaydeep Raijada.",
   openGraph: {
     title: "Services",
     description:
-      "AI engineering services — model fine-tuning & evals, RAG, AI agents, and automation.",
+      "AI engineering services: model fine-tuning & evals, RAG, AI agents, and automation.",
   },
 };
 
@@ -67,7 +67,7 @@ const offerings: {
   {
     title: "Model Fine-Tuning & Evaluation",
     outcome:
-      "For teams that have outgrown prompting. I domain-adapt or post-train open models so they're faster, cheaper, and better at your specific task — and I build the eval harness to prove it.",
+      "For teams that have outgrown prompting. I domain-adapt or post-train open models so they're faster, cheaper, and better at your specific task, and I build the eval harness to prove it.",
     includes: [
       "SFT / LoRA / QLoRA / continued pre-training",
       "RL post-training (GRPO, reward design)",
@@ -78,7 +78,7 @@ const offerings: {
   {
     title: "RAG & Knowledge Systems",
     outcome:
-      "Turn your documents, catalog, or knowledge base into accurate, grounded answers — with citations, so you can trust the output.",
+      "Turn your documents, catalog, or knowledge base into accurate, grounded answers with citations, so you can trust the output.",
     includes: [
       "Retrieval pipeline over your data",
       "Grounded, cited responses",
@@ -100,7 +100,7 @@ const offerings: {
   {
     title: "AI Audit & Advisory",
     outcome:
-      "A focused sprint to assess an existing LLM system or map where AI can actually help your business — with a concrete, prioritized roadmap you can act on.",
+      "A focused sprint to assess an existing LLM system or map where AI can actually help your business, ending in a concrete, prioritized roadmap you can act on.",
     includes: [
       "System / opportunity review",
       "Eval harness for what you already run",
@@ -112,9 +112,9 @@ const offerings: {
 
 const process: { step: string; detail: string }[] = [
   { step: "Intro call", detail: "A free 20-minute call to understand the problem and whether I'm the right fit." },
-  { step: "Fixed-scope proposal", detail: "Clear deliverables, timeline, and price — no open-ended hourly billing." },
+  { step: "Fixed-scope proposal", detail: "Clear deliverables, timeline, and price. No open-ended hourly billing." },
   { step: "Build", detail: "I build it, with progress you can see along the way." },
-  { step: "Handoff & support", detail: "Deployed, documented, and maintained — with ongoing support where it makes sense." },
+  { step: "Handoff & support", detail: "Deployed, documented, and maintained, with ongoing support where it makes sense." },
 ];
 
 export default function ServicesPage() {
@@ -153,7 +153,7 @@ export default function ServicesPage() {
             Work with me
           </h1>
           <p className="text-[15px] leading-relaxed text-muted-foreground text-pretty">
-            I help teams and businesses build and ship AI — from custom model
+            I help teams and businesses build and ship AI, from custom model
             fine-tuning to RAG, agents, and automation. I&apos;m an applied AI
             engineer who trains and deploys models in the open; you get the
             depth without the agency overhead.
@@ -219,7 +219,7 @@ export default function ServicesPage() {
           {/* Proof */}
           <Section label="Why me">
             <p className="text-[15px] leading-relaxed text-foreground/85 text-pretty">
-              I don&apos;t just integrate APIs — I train models from scratch and
+              I don&apos;t just integrate APIs. I train models from scratch and
               ship them publicly. I trained a 1.5B RL safety monitor to 0.893
               AUROC (Top 100 at the Hugging Face × Meta OpenEnv Hackathon),
               domain-adapted a small model for a 20% perplexity drop, and built

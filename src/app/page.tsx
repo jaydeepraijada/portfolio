@@ -219,9 +219,17 @@ export default function V2Page() {
 
           {/* Research */}
           <Section label="Research">
-            <div className="flex flex-col gap-8">
+            <p className="text-[15px] leading-relaxed text-foreground/75 text-pretty mb-6">
+              One research program, two studies: on-policy distillation and
+              forgetting in small models. What survives when you shrink the
+              student, and what to do when it doesn&apos;t.
+            </p>
+            <div className="flex flex-col gap-6">
               {DATA.research.map((r) => (
-                <div key={r.title} className="flex flex-col gap-3">
+                <article
+                  key={r.title}
+                  className="flex flex-col gap-3 rounded-2xl border border-border/70 bg-foreground/[0.02] p-5 sm:p-6 transition-colors hover:border-foreground/25"
+                >
                   <div className="flex items-baseline justify-between gap-4">
                     <h3 className="font-display text-lg font-medium text-foreground text-pretty">
                       {r.title}
@@ -231,22 +239,31 @@ export default function V2Page() {
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 text-xs">
-                    <span className="inline-flex items-center rounded-full bg-foreground/[0.04] border border-border/80 px-2 py-0.5 text-muted-foreground">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-foreground/[0.04] border border-border/80 px-2.5 py-0.5 text-muted-foreground">
+                      {r.dates.includes("Present") && (
+                        <span className="relative flex size-1.5" aria-hidden>
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/60" />
+                          <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
+                        </span>
+                      )}
                       {r.status}
                     </span>
-                    <span className="text-muted-foreground/80">
-                      Model: <span className="text-foreground/80">{r.model}</span>
+                    <span className="inline-flex items-center rounded-full border border-border/80 px-2.5 py-0.5 text-muted-foreground">
+                      {r.model}
                     </span>
-                    <span className="text-muted-foreground/40">·</span>
-                    <span className="text-muted-foreground/80">
-                      Target: <span className="text-foreground/80">{r.target}</span>
-                    </span>
+                    {r.target && (
+                      <span className="inline-flex items-center rounded-full border border-border/80 px-2.5 py-0.5 text-muted-foreground">
+                        Target: <span className="text-foreground/80 ml-1">{r.target}</span>
+                      </span>
+                    )}
                   </div>
                   <p className="text-[15px] leading-relaxed text-foreground/75 text-pretty">
                     {r.description}
                   </p>
-                  <p className="text-[15px] leading-relaxed text-foreground/85 text-pretty">
-                    <span className="text-muted-foreground">Hypothesis. </span>
+                  <p className="border-l-2 border-foreground/15 pl-3 text-[15px] leading-relaxed text-foreground/85 text-pretty">
+                    <span className="font-medium text-foreground">
+                      Hypothesis:{" "}
+                    </span>
                     {r.hypothesis}
                   </p>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
@@ -260,7 +277,7 @@ export default function V2Page() {
                       </ExtLink>
                     ))}
                   </div>
-                </div>
+                </article>
               ))}
             </div>
           </Section>
@@ -272,12 +289,16 @@ export default function V2Page() {
                 <article key={p.title} className="flex flex-col gap-3">
                   <div className="flex items-baseline justify-between gap-4">
                     <h3 className="font-display text-lg font-medium text-foreground tracking-tight">
-                      <ExtLink
-                        href={p.href}
-                        className="decoration-transparent hover:decoration-foreground"
-                      >
-                        {p.title}
-                      </ExtLink>
+                      {p.href ? (
+                        <ExtLink
+                          href={p.href}
+                          className="decoration-transparent hover:decoration-foreground"
+                        >
+                          {p.title}
+                        </ExtLink>
+                      ) : (
+                        p.title
+                      )}
                     </h3>
                     <div className="text-xs tabular-nums text-muted-foreground shrink-0">
                       {p.dates}
@@ -286,26 +307,30 @@ export default function V2Page() {
                   <div className="prose prose-sm max-w-none text-[15px] leading-relaxed text-foreground/75 prose-strong:text-foreground prose-strong:font-medium prose-p:my-0 text-pretty">
                     <Markdown>{p.description}</Markdown>
                   </div>
-                  <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                    {p.technologies.map((t, i) => (
-                      <span key={t} className="flex items-center gap-3">
-                        {i > 0 && <span className="text-border">·</span>}
-                        <span>{t}</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {p.technologies.map((t) => (
+                      <span
+                        key={t}
+                        className="rounded-full border border-border/70 bg-foreground/[0.03] px-2.5 py-0.5 text-xs text-muted-foreground"
+                      >
+                        {t}
                       </span>
                     ))}
                   </div>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mt-1">
-                    {p.links.map((l) => (
-                      <ExtLink
-                        key={l.href}
-                        href={l.href}
-                        className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
-                      >
-                        {l.type}
-                        <ArrowUpRight className="size-3" aria-hidden />
-                      </ExtLink>
-                    ))}
-                  </div>
+                  {p.links.length > 0 && (
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mt-1">
+                      {p.links.map((l) => (
+                        <ExtLink
+                          key={l.href}
+                          href={l.href}
+                          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+                        >
+                          {l.type}
+                          <ArrowUpRight className="size-3" aria-hidden />
+                        </ExtLink>
+                      ))}
+                    </div>
+                  )}
                 </article>
               ))}
             </div>

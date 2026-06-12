@@ -6,7 +6,7 @@ export const DATA = {
   description:
     "I train small language models and study how far they can be pushed with reinforcement learning and post-training.",
   summary:
-    "I design reward functions, build training environments, and check whether techniques that work on large models still work when you shrink them ~70×. By day I'm an Analyst at Lowe's. On the side I'm running post-training experiments and exploring continual learning and self-distillation for sub-1B models. Recently placed in the top 100 at the [HuggingFace × Meta OpenEnv Hackathon](https://huggingface.co/spaces/Mayank022/shade-gym) in Bangalore.",
+    "I design reward functions, build training environments, and check whether techniques that work on large models still work when you shrink them ~70×. By day I'm an Analyst at Lowe's. On the side I'm running a small-scale research program on on-policy distillation and continual learning: how to schedule multiple specialist teachers, when distribution-level supervision beats sampled tokens, and whether self-distillation survives weak in-context learning. Recently placed in the top 100 at the [HuggingFace × Meta OpenEnv Hackathon](https://huggingface.co/spaces/Mayank022/shade-gym) in Bangalore.",
 
   contact: {
     email: "j.raijada25@gmail.com",
@@ -35,15 +35,37 @@ export const DATA = {
   research: [
     {
       title:
+        "Multi-Teacher On-Policy Distillation: Scheduling, Forgetting, and the Sampled-vs-Logit Dispute",
+      status: "Design locked · bring-up",
+      dates: "June 2026 – Present",
+      description:
+        "Frontier labs distill one student from many specialist teachers at once (Nemotron 3 Ultra routes more than ten), yet nobody has published a controlled comparison of how to schedule them: routed-joint vs sequential vs sequential-with-replay, at matched token budgets, with forgetting and backward transfer measured. There is also a second open dispute, where three 2026 papers report three different winners between sampled-token and logit-distribution supervision. This study runs the clean 2×2 plus replay control at small scale, across two deliberately different domains (math and tool-calling), behind strict validity gates: pinned revisions, loss-correctness checks, and evaluator audits before anything expensive runs.",
+      hypothesis:
+        "Routed joint distillation gives the best multi-domain tradeoff at matched budgets, and the sampled-vs-logit winner per domain is predicted by how far student rollouts stray off the teacher's support.",
+      model: "Qwen2.5-0.5B student · two 7B specialist teachers",
+      target: "",
+      links: [
+        {
+          type: "Revisiting OPD (2603.25562)",
+          href: "https://arxiv.org/abs/2603.25562",
+        },
+        {
+          type: "Rethinking OPD (2604.13016)",
+          href: "https://arxiv.org/abs/2604.13016",
+        },
+      ],
+    },
+    {
+      title:
         "Self-Distillation at Sub-1B Scale: Does SDFT Break When ICL Is Weak?",
-      status: "Phase 1 (ongoing)",
+      status: "Gap verified · infra built",
       dates: "May 2026 – Present",
       description:
-        "The two leading self-distillation methods were tested on models 7B parameters and larger. Neither paper looks at what happens below 1B, where in-context learning is much weaker. DynSDPB was built for small models, but no one has compared it head-to-head with the ICL-based approaches.",
+        "ICL-based self-distillation has never been tested below 1.7B parameters, where the in-context learning it relies on for its teacher signal is much weaker. DynSDPB was built for small models but has never been compared head-to-head against the ICL-based approach. This study runs that comparison in a sequential-learning setup (arithmetic → code → factual QA), measures forgetting across 360M–1.5B, and correlates few-shot ICL quality with the strength of the self-distillation teacher signal.",
       hypothesis:
-        "Self-distillation gains depend on how good a model is at in-context learning. Below a certain size, ICL signals get too noisy to use as a teacher, and DynSDPB should outperform there.",
-      model: "SmolLM2-360M",
-      target: "ACL 2027",
+        "Self-distillation gains track in-context learning quality. Below some scale threshold the ICL teacher signal degrades into noise, and mini-batch logit distillation (DynSDPB) becomes the more reliable choice.",
+      model: "SmolLM2-360M · Qwen2.5-0.5B / 1.5B",
+      target: "EMNLP / CoLLAs 2027",
       links: [
         {
           type: "SDFT (2601.19897)",
@@ -90,7 +112,7 @@ export const DATA = {
       href: "https://github.com/jaydeepraijada/post-training-experiments",
       dates: "May 2026",
       description:
-        "The full post-training stack run end-to-end on a single sub-1B model, SmolLM-135M, with each stage measured. **CPT:** continued pre-training on 138 arXiv ML papers via QLoRA (rank 32, Unsloth) — on held-out papers, **−20.1% perplexity** (22.97 to 18.36), **+25.4% ROUGE-L**, **+37.5% BLEU**; rank saturates at r≥16, so the data (not the rank) is the bottleneck. **SFT:** instruction-tuned on a 300K-pair dataset generated from arXiv papers (7 stochastic task types, structured decoding via Outlines), using ChatML and response-only loss masking. **DPO:** preference-aligned on 151K LLM-judged pairs (β=0.1), which lifted held-out reward accuracy from **0.50 to 0.72** while *preserving* generation diversity — an alignment gain with no mode collapse. All checkpoints published to HuggingFace.",
+        "The full post-training stack run end-to-end on a single sub-1B model, SmolLM-135M, with each stage measured. **CPT:** continued pre-training on 138 arXiv ML papers via QLoRA (rank 32, Unsloth). On held-out papers: **−20.1% perplexity** (22.97 to 18.36), **+25.4% ROUGE-L**, **+37.5% BLEU**; rank saturates at r≥16, so the data (not the rank) is the bottleneck. **SFT:** instruction-tuned on a 300K-pair dataset generated from arXiv papers (7 stochastic task types, structured decoding via Outlines), using ChatML and response-only loss masking. **DPO:** preference-aligned on 151K LLM-judged pairs (β=0.1), which lifted held-out reward accuracy from **0.50 to 0.72** while *preserving* generation diversity, an alignment gain with no mode collapse. All checkpoints published to HuggingFace.",
       technologies: [
         "CPT",
         "SFT",
@@ -115,6 +137,22 @@ export const DATA = {
           href: "https://huggingface.co/JaydeepR/SmolLM-135M-CPT-LoRA-r32",
         },
       ],
+    },
+    {
+      title: "CPT × LoRA: A Controlled Ablation Study",
+      href: "",
+      dates: "February 2026",
+      description:
+        "Which LoRA tricks actually matter for continued pre-training? A reproducible study stress-testing the recommendations in Unsloth's CPT guide. Llama-2-7B is continually pretrained on a code corpus (Magicoder-Evol-Instruct-110K); starting from a paper baseline, each experiment adds **exactly one ingredient** (extra LoRA target modules, rank-stabilized LoRA, a decoupled embedding learning rate) and measures the effect on held-out validation perplexity. One training script, six config files, one varied knob each. That identity is what makes it a controlled experiment rather than six scripts that drift apart.",
+      technologies: [
+        "CPT",
+        "LoRA",
+        "rsLoRA",
+        "Unsloth",
+        "Llama-2-7B",
+        "Ablation Design",
+      ],
+      links: [],
     },
     {
       title: "Diffusion Language Models",

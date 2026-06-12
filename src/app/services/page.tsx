@@ -4,13 +4,13 @@ import { ArrowUpRight } from "lucide-react";
 import { DATA } from "@/data/resume";
 
 export const metadata: Metadata = {
-  title: "Services",
+  title: "AI Engineering Services — Fine-Tuning, RAG & Agents",
   description:
-    "AI engineering services: model fine-tuning & evals, RAG, AI agents, and automation. Built and shipped by Jaydeep Raijada.",
+    "Freelance AI engineering: LLM fine-tuning & evals, RAG systems, AI agents, and automation. Fixed-scope projects, built and shipped by Jaydeep Raijada.",
   openGraph: {
-    title: "Services",
+    title: "AI Engineering Services — Fine-Tuning, RAG & Agents",
     description:
-      "AI engineering services: model fine-tuning & evals, RAG, AI agents, and automation.",
+      "Freelance AI engineering: LLM fine-tuning & evals, RAG systems, AI agents, and automation. Fixed-scope projects.",
   },
 };
 
@@ -110,6 +110,28 @@ const offerings: {
   },
 ];
 
+const mailto = (email: string) =>
+  `mailto:${email}?subject=${encodeURIComponent("Project inquiry")}`;
+
+const faqs: { q: string; a: string }[] = [
+  {
+    q: "Do you work remotely?",
+    a: "Yes. I'm based in Bangalore (IST) and work with clients anywhere, mostly async with scheduled overlap for calls.",
+  },
+  {
+    q: "Who owns the work?",
+    a: "You do. Code, model weights, data, and documentation are all handed over at the end, and I'm happy to sign an NDA before we talk specifics.",
+  },
+  {
+    q: "What size of project do you take on?",
+    a: "Anything from a 1–2 week audit or eval sprint to a multi-month build. If a project needs more hands than mine, I'll say so up front.",
+  },
+  {
+    q: "What should my first email include?",
+    a: "What you're trying to do, what data or system you already have, and your rough timeline. Two or three sentences is enough — I'll come back with questions or a call slot.",
+  },
+];
+
 const process: { step: string; detail: string }[] = [
   { step: "Intro call", detail: "A free 20-minute call to understand the problem and whether I'm the right fit." },
   { step: "Fixed-scope proposal", detail: "Clear deliverables, timeline, and price. No open-ended hourly billing." },
@@ -117,9 +139,50 @@ const process: { step: string; detail: string }[] = [
   { step: "Handoff & support", detail: "Deployed, documented, and maintained, with ongoing support where it makes sense." },
 ];
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ProfessionalService",
+      name: "Jaydeep Raijada — AI Engineering Services",
+      url: `${DATA.url}/services`,
+      email: DATA.contact.email,
+      description:
+        "AI engineering services: model fine-tuning & evals, RAG, AI agents, and automation.",
+      areaServed: "Worldwide",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Bangalore",
+        addressCountry: "IN",
+      },
+      founder: { "@type": "Person", name: DATA.name, url: DATA.url },
+      makesOffer: offerings.map((o) => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: o.title,
+          description: o.outcome,
+        },
+      })),
+    },
+    {
+      "@type": "FAQPage",
+      mainEntity: faqs.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
+    },
+  ],
+};
+
 export default function ServicesPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-2xl px-6 py-16 sm:py-24">
         {/* Header */}
         <header className="flex items-center justify-between mb-16">
@@ -161,7 +224,7 @@ export default function ServicesPage() {
           <p className="text-[15px] text-foreground/85 mt-4">
             Currently taking on a few projects. Reach me at{" "}
             <ExtLink
-              href={`mailto:${DATA.contact.email}`}
+              href={mailto(DATA.contact.email)}
               className="font-mono text-[14px]"
             >
               {DATA.contact.email}
@@ -223,8 +286,11 @@ export default function ServicesPage() {
               ship them publicly. I trained a 1.5B RL safety monitor to 0.893
               AUROC (Top 100 at the Hugging Face × Meta OpenEnv Hackathon),
               domain-adapted a small model for a 20% perplexity drop, and built
-              a full LLM training stack by hand. That depth is what you get on
-              your project.
+              a full LLM training stack by hand. I&apos;ve also shipped this
+              end-to-end: TenderIQ, a production RAG system with cited
+              verdicts, OCR fallbacks, and a human-review queue, and an
+              LLM-based customer-feedback pipeline running in production at a
+              Fortune 50 retailer. That depth is what you get on your project.
             </p>
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mt-4">
               <Link
@@ -251,13 +317,29 @@ export default function ServicesPage() {
             </div>
           </Section>
 
+          {/* FAQ */}
+          <Section label="Common questions">
+            <dl className="flex flex-col gap-5">
+              {faqs.map((f) => (
+                <div key={f.q} className="flex flex-col gap-0.5">
+                  <dt className="text-[15px] font-medium text-foreground">
+                    {f.q}
+                  </dt>
+                  <dd className="text-[15px] leading-relaxed text-foreground/75 text-pretty">
+                    {f.a}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </Section>
+
           {/* Contact */}
           <Section label="Get started">
             <p className="text-[15px] leading-relaxed text-foreground/85 text-pretty">
               Tell me what you&apos;re trying to do and I&apos;ll tell you
               honestly whether AI is the right tool and how I&apos;d approach it.
               Email{" "}
-              <ExtLink href={`mailto:${DATA.contact.email}`}>
+              <ExtLink href={mailto(DATA.contact.email)}>
                 {DATA.contact.email}
               </ExtLink>{" "}
               or reach me on{" "}

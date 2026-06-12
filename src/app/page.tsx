@@ -162,6 +162,20 @@ export default function V2Page() {
               <p className="text-[15px] leading-relaxed text-muted-foreground text-pretty">
                 {DATA.description}
               </p>
+              <Link
+                href="/services"
+                className="group inline-flex w-fit items-center gap-2 rounded-full border border-border/80 bg-foreground/[0.03] px-3 py-1 text-sm text-foreground/85 transition-colors hover:border-foreground/30 mt-1"
+              >
+                <span className="relative flex size-1.5" aria-hidden>
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/60" />
+                  <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
+                </span>
+                Available for freelance AI projects
+                <ArrowUpRight
+                  className="size-3 text-muted-foreground transition-colors group-hover:text-foreground"
+                  aria-hidden
+                />
+              </Link>
               <div className="text-[15px] text-foreground/85 mt-1">
                 <ExtLink
                   href={`mailto:${DATA.contact.email}`}
@@ -398,6 +412,13 @@ export default function V2Page() {
               <ExtLink href={DATA.contact.social.LinkedIn.url}>
                 LinkedIn
               </ExtLink>
+              . Hiring for a project? See what I build on the{" "}
+              <Link
+                href="/services"
+                className="underline underline-offset-4 decoration-foreground/30 hover:decoration-foreground"
+              >
+                services page
+              </Link>
               .
             </p>
           </Section>

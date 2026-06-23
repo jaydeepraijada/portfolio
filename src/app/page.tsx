@@ -64,6 +64,17 @@ const skillGroups: { label: string; items: string[] }[] = [
     ],
   },
   {
+    label: "Distributed training & inference",
+    items: [
+      "5D Parallelism (DP/TP/PP/CP/EP)",
+      "vLLM",
+      "PagedAttention",
+      "Continuous Batching",
+      "KV Cache Management",
+      "Inference Optimization",
+    ],
+  },
+  {
     label: "Languages & analytics",
     items: ["Python", "SQL", "Pandas", "Power BI"],
   },

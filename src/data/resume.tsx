@@ -36,7 +36,7 @@ export const DATA = {
     {
       title:
         "Multi-Teacher On-Policy Distillation: Scheduling, Forgetting, and the Sampled-vs-Logit Dispute",
-      status: "Design locked · bring-up",
+      status: "Rescoped design v2 · pre-implementation, awaiting sign-off",
       dates: "June 2026 – Present",
       description:
         "Frontier labs distill one student from many specialist teachers at once (Nemotron 3 Ultra routes more than ten), yet nobody has published a controlled comparison of how to schedule them: routed-joint vs sequential vs sequential-with-replay, at matched token budgets, with forgetting and backward transfer measured. There is also a second open dispute, where three 2026 papers report three different winners between sampled-token and logit-distribution supervision. This study runs the clean 2×2 plus replay control at small scale, across two deliberately different domains (math and tool-calling), behind strict validity gates: pinned revisions, loss-correctness checks, and evaluator audits before anything expensive runs.",
@@ -45,6 +45,10 @@ export const DATA = {
       model: "Qwen2.5-0.5B student · two 7B specialist teachers",
       target: "",
       links: [
+        {
+          type: "GitHub",
+          href: "https://github.com/jaydeepraijada/micro-mopd",
+        },
         {
           type: "Revisiting OPD (2603.25562)",
           href: "https://arxiv.org/abs/2603.25562",
@@ -80,6 +84,41 @@ export const DATA = {
   ],
 
   projects: [
+    {
+      title: "DPO Squeezing Falsification on Small LMs",
+      href: "https://github.com/jaydeepraijada/dpo-verifiable-rewards-slm",
+      dates: "June 2026",
+      description:
+        "A falsification experiment: does the DPO \"squeezing\" failure mode, where chosen and rejected log-probabilities collapse together instead of just the rejected one falling, hit sub-1B models earlier or harder than the 7B+ models it's documented in? **Not supported.** Three rounds of iterative DPO with verifiable rewards (DPO-VP) on Qwen2.5-0.5B-Instruct + GSM8K show the textbook *healthy* signature instead: chosen logprob stays flat, rejected falls faster, preference gap grows round over round. A matched GRPO baseline is equally stable. Pushing further to SmolLM2-135M hit a capacity floor (3% pass@1) before the squeezing question could even be tested at that scale.",
+      technologies: [
+        "DPO",
+        "RLVR",
+        "GRPO",
+        "Qwen2.5-0.5B",
+        "GSM8K",
+        "Falsification",
+      ],
+      links: [
+        {
+          type: "GitHub",
+          href: "https://github.com/jaydeepraijada/dpo-verifiable-rewards-slm",
+        },
+      ],
+    },
+    {
+      title: "The Open Post-Training Project (OPTP)",
+      href: "https://github.com/jaydeepraijada/open-post-training-project",
+      dates: "June 2026 – Present",
+      description:
+        "An open-source, graduate-level textbook and engineering handbook documenting the complete evolution of LLM post-training (2017–2026), from early instruction tuning through modern reasoning-focused RL systems. Aiming to be the resource a researcher could use to reproduce the post-training pipeline of any frontier lab: paper encyclopedia, reconstructed per-lab recipes, algorithm deep-dives with derivations, and runnable implementations. **Early scaffolding stage** — structure is in place, content is being written.",
+      technologies: ["Post-Training", "RLHF", "Technical Writing", "Open Source"],
+      links: [
+        {
+          type: "GitHub",
+          href: "https://github.com/jaydeepraijada/open-post-training-project",
+        },
+      ],
+    },
     {
       title: "SHADE-GYM",
       href: "https://github.com/jaydeepraijada/SHADE-GYM",

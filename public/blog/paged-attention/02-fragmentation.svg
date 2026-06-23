@@ -1,0 +1,56 @@
+<svg viewBox="0 0 760 360" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="760" height="360" fill="#ffffff" stroke="#d0d0d0" stroke-width="1"/>
+  <defs>
+    <pattern id="hatch" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <rect width="6" height="6" fill="#ffffff"/>
+      <line x1="0" y1="0" x2="0" y2="6" stroke="#bbb" stroke-width="2"/>
+    </pattern>
+    <marker id="arrow1" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#b33"/>
+    </marker>
+  </defs>
+
+  <text x="380" y="28" text-anchor="middle" font-size="16" font-weight="600" fill="#111">Contiguous allocation -&gt; fragmentation</text>
+
+  <!-- Panel 1: initial allocation. Scale: 0.1 px per token. GPU capacity here = 6800 tokens. -->
+  <text x="40" y="56" font-size="13" fill="#444">1. Reserved up front by estimated length. A, B, C fit. D queues.</text>
+  <rect x="40" y="68" width="680" height="60" fill="none" stroke="#111" stroke-width="2"/>
+  <!-- A: reserved 2000 tok (200px), used 1200 tok (120px) -->
+  <rect x="40" y="68" width="120" height="60" fill="#cfe3ff" stroke="#111" stroke-width="1"/>
+  <rect x="160" y="68" width="80" height="60" fill="url(#hatch)" stroke="#111" stroke-width="1"/>
+  <!-- B: reserved 1000 tok (100px), used 700 tok (70px) -->
+  <rect x="240" y="68" width="70" height="60" fill="#ffe6b3" stroke="#111" stroke-width="1"/>
+  <rect x="310" y="68" width="30" height="60" fill="url(#hatch)" stroke="#111" stroke-width="1"/>
+  <!-- C: reserved 2000 tok (200px), used 900 tok (90px) -->
+  <rect x="340" y="68" width="90" height="60" fill="#d8f0d2" stroke="#111" stroke-width="1"/>
+  <rect x="430" y="68" width="110" height="60" fill="url(#hatch)" stroke="#111" stroke-width="1"/>
+  <!-- free remainder: 1800 tok (180px) -->
+  <rect x="540" y="68" width="180" height="60" fill="#f2f2f2" stroke="#111" stroke-width="1"/>
+
+  <text x="140" y="98" text-anchor="middle" font-size="12" fill="#111">A</text>
+  <text x="290" y="98" text-anchor="middle" font-size="12" fill="#111">B</text>
+  <text x="440" y="98" text-anchor="middle" font-size="12" fill="#111">C</text>
+  <text x="630" y="98" text-anchor="middle" font-size="11" fill="#777">free (1800)</text>
+
+  <!-- D queued -->
+  <rect x="545" y="150" width="170" height="40" fill="none" stroke="#b33" stroke-width="2" stroke-dasharray="5,3"/>
+  <text x="630" y="175" text-anchor="middle" font-size="12" fill="#b33">D (needs 2000), queued</text>
+  <line x1="630" y1="150" x2="630" y2="128" stroke="#b33" stroke-width="1.5" marker-end="url(#arrow1)"/>
+
+  <text x="40" y="210" font-size="11.5" fill="#666">solid = tokens generated so far &#183; hatched = reserved-but-idle (internal fragmentation)</text>
+
+  <!-- Panel 2: after B finishes -->
+  <text x="40" y="250" font-size="13" fill="#444">2. B finishes and frees its slot. D still can't fit.</text>
+  <rect x="40" y="262" width="680" height="60" fill="none" stroke="#111" stroke-width="2"/>
+  <rect x="40" y="262" width="200" height="60" fill="#cfe3ff" stroke="#111" stroke-width="1"/>
+  <rect x="240" y="262" width="100" height="60" fill="#d8f0d2" stroke="#111" stroke-width="1"/>
+  <rect x="340" y="262" width="200" height="60" fill="#d8f0d2" stroke="#111" stroke-width="1" opacity="0.55"/>
+  <rect x="540" y="262" width="180" height="60" fill="#f2f2f2" stroke="#111" stroke-width="1"/>
+
+  <text x="140" y="292" text-anchor="middle" font-size="12" fill="#111">A</text>
+  <text x="290" y="288" text-anchor="middle" font-size="11" fill="#070">freed (1000)</text>
+  <text x="440" y="292" text-anchor="middle" font-size="12" fill="#111">C</text>
+  <text x="630" y="288" text-anchor="middle" font-size="11" fill="#777">free (1800)</text>
+
+  <text x="380" y="345" text-anchor="middle" font-size="12.5" fill="#b33">Two free gaps (1000 and 1800), not contiguous, neither fits D's 2000. External fragmentation.</text>
+</svg>

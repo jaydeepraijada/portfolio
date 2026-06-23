@@ -1,0 +1,122 @@
+---
+title: "PagedAttention, simply explained"
+publishedAt: "2026-06-23"
+author: "Jaydeep Raijada"
+summary: "Why naive KV cache allocation wastes GPU memory, and how PagedAttention fixes it with block-based paging."
+image: ""
+---
+
+## What's actually sitting in GPU memory during inference
+
+![GPU memory composition](/blog/paged-attention/01-gpu-memory.svg)
+
+Three things:
+
+1. **Model weights**: shared across every request. Fixed, doesn't move.
+2. **Activations**: private to a single forward pass, transient, freed right after.
+3. **KV cache**: private to each *request*, grows one key/value vector per generated token, and is by far the largest consumer once you have concurrent requests.
+
+---
+
+## The problem: KV cache fragmentation
+
+![Fragmentation problem](/blog/paged-attention/02-fragmentation.svg)
+
+Say you have a GPU with a model loaded and 4 incoming requests. You estimate how many tokens each will generate, A: 2000, B: 1000, C: 2000, D: 2000, and reserve **contiguous** KV cache memory for each based on that estimate. A, B, and C fit. D doesn't, so D queues.
+
+While A, B, C decode, two things waste memory:
+
+- **Internal fragmentation**: at any point mid-generation, the reserved block is mostly empty (only the tokens generated *so far* are filled), and if the real output ends up shorter than the estimate, that gap never gets used at all.
+- **External fragmentation**: say B finishes early and frees its memory. D still can't move in, because D needs a 2000-token reservation and B's freed space isn't big enough to hold it. D waits for A or C to finish instead.
+
+Both trace back to the same root cause: **requests are allocated contiguous physical memory.**
+
+---
+
+## How PagedAttention solves it
+
+![Paged block allocation, filling up step by step](/blog/paged-attention/03-paged-blocks.svg)
+
+Stop allocating contiguous space per request. Divide the KV cache region into fixed-size blocks (say, 100 blocks, 10 token-slots each), keep a **free block list**, and give each request a **paging table** mapping its logical blocks to whichever physical blocks are actually free.
+
+Worked example, prefill tokens A:8, B:5, C:12, D:9.
+
+Let's say we have a GPU with 100 blocks, each block holding KV pairs for 10 tokens. We start with two lists: a free block list `[0,1,2,...,99]` and a paging table, empty at the start.
+
+After the prefill stage, allocation looks like this:
+
+```
+A: Block 0 (8/10)
+B: Block 1 (5/10)
+C: Block 2 (10/10), Block 3 (2/10)
+D: Block 4 (9/10)
+```
+
+We pop these out of the free block list, so it becomes `[5,6,7,...,99]`. The paging table now looks like:
+
+```
+Req A: {0}
+Req B: {1}
+Req C: {2,3}
+Req D: {4}
+```
+
+Now decoding starts (dynamic allocation kicks in from here):
+
+**Step 1 of decoding:**
+
+```
+A: Block 0 (9/10)
+B: Block 1 (6/10)
+C: Block 2 (10/10), Block 3 (3/10)
+D: Block 4 (10/10)
+```
+
+**Step 2 of decoding:**
+
+```
+A: Block 0 (10/10)
+B: Block 1 (7/10)
+C: Block 2 (10/10), Block 3 (4/10)
+D: Block 4 (10/10), Block 5 (1/10)
+```
+
+D just spilled into a new block, so we pop block 5 from the free list, leaving `[6,7,8,...,99]`. Paging table:
+
+```
+Req A: {0}
+Req B: {1}
+Req C: {2,3}
+Req D: {4,5}
+```
+
+**Step 3 of decoding:**
+
+```
+A: Block 0 (10/10), Block 6 (1/10)
+B: Block 1 (8/10)
+C: Block 2 (10/10), Block 3 (5/10)
+D: Block 4 (10/10), Block 5 (2/10)
+```
+
+A just spilled too, so we pop block 6, leaving `[7,8,9,...,99]`. Paging table:
+
+```
+Req A: {0,6}
+Req B: {1}
+Req C: {2,3}
+Req D: {4,5}
+```
+
+And so on. Every block is handed out only when the previous one actually fills up, never reserved ahead of time based on a guess.
+
+Since no request hogs memory upfront, more requests get accommodated instead of queued; a request doesn't have to wait for another similarly-sized one to finish before getting memory. That solves external fragmentation. And the max wastage per block is block_size minus 1, which solves internal fragmentation too.
+
+---
+
+## What's next
+
+Two things this post skips on purpose, for a longer follow-up:
+
+- **How attention actually gets computed** once a request's tokens are split across non-contiguous blocks like A's `{0,6}` above. Short version: the paging table works like a page table, and there's a gather step before the attention math runs, but it deserves its own walkthrough.
+- **Copy-on-write KV cache sharing.** The same block-table trick lets beam search / parallel sampling share blocks for a common prefix, and only copy a block once two sequences actually diverge from each other.

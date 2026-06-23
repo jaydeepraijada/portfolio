@@ -4,11 +4,13 @@ export function remarkCodeMeta() {
             if (!node || typeof node !== "object") return;
 
             if (node.type === "code") {
+                node.data ||= {};
+                node.data.hProperties ||= {};
+
+                node.data.hProperties["data-language"] = node.lang || "plaintext";
+
                 const meta: string | undefined = node.meta;
                 if (meta) {
-                    node.data ||= {};
-                    node.data.hProperties ||= {};
-
                     node.data.hProperties["data-meta"] = meta;
 
                     const titleMatch = meta.match(/title="([^"]+)"/);

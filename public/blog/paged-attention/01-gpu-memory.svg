@@ -1,0 +1,34 @@
+<svg viewBox="0 0 760 250" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="760" height="250" fill="#ffffff" stroke="#d0d0d0" stroke-width="1"/>
+  <text x="380" y="32" text-anchor="middle" font-size="16" font-weight="600" fill="#111">What's in GPU memory during inference</text>
+
+  <!-- stacked bar representing total GPU memory -->
+  <rect x="40" y="70" width="680" height="60" fill="none" stroke="#111" stroke-width="2"/>
+
+  <!-- weights -->
+  <rect x="40" y="70" width="82" height="60" fill="#cfe3ff" stroke="#111" stroke-width="1.5"/>
+  <!-- activations -->
+  <rect x="122" y="70" width="54" height="60" fill="#ffe6b3" stroke="#111" stroke-width="1.5"/>
+  <!-- kv cache, multiple requests -->
+  <rect x="176" y="70" width="544" height="60" fill="#ffd0d0" stroke="#111" stroke-width="1.5"/>
+  <line x1="312" y1="70" x2="312" y2="130" stroke="#b33" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="448" y1="70" x2="448" y2="130" stroke="#b33" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="584" y1="70" x2="584" y2="130" stroke="#b33" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <text x="244" y="105" text-anchor="middle" font-size="10.5" fill="#883">req A</text>
+  <text x="380" y="105" text-anchor="middle" font-size="10.5" fill="#883">req B</text>
+  <text x="516" y="105" text-anchor="middle" font-size="10.5" fill="#883">req C</text>
+  <text x="652" y="105" text-anchor="middle" font-size="10.5" fill="#883">req D</text>
+
+  <!-- legend, one row each so text length never collides with a neighbor -->
+  <rect x="40" y="150" width="14" height="14" fill="#cfe3ff" stroke="#111"/>
+  <text x="64" y="161" font-size="12.5" fill="#111">Model weights: shared across requests, fixed size</text>
+
+  <rect x="40" y="176" width="14" height="14" fill="#ffe6b3" stroke="#111"/>
+  <text x="64" y="187" font-size="12.5" fill="#111">Activations: transient, freed right after each forward pass</text>
+
+  <rect x="40" y="202" width="14" height="14" fill="#ffd0d0" stroke="#111"/>
+  <text x="64" y="213" font-size="12.5" fill="#111">KV cache: per-request, grows every generated token</text>
+
+  <text x="380" y="238" text-anchor="middle" font-size="12" fill="#444">KV cache is the biggest of the three, and it keeps growing as requests run concurrently</text>
+</svg>

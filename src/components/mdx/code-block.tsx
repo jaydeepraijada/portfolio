@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, type ComponentProps } from "react";
+import { useState, useRef, useEffect, isValidElement, type ComponentProps } from "react";
 import { Copy, Check } from "lucide-react";
 import { Button } from "../ui/button";
 import { codeToHtml } from "shiki/bundle/web";
@@ -23,7 +23,13 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
   }>({ html: "", className: "", title: null });
   const preRef = useRef<HTMLPreElement>(null);
 
+  const childLang = isValidElement(children)
+    ? (children.props as Record<string, unknown>)["data-language"]
+    : undefined;
+  const isPlain = !childLang || childLang === "plaintext";
+
   useEffect(() => {
+    if (isPlain) return;
     const pre = preRef.current;
     const codeEl = pre?.querySelector("code");
     if (!pre || !codeEl) return;
@@ -54,7 +60,7 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
         console.error("Failed to highlight code:", error);
         setRenderState({ html: "", className: nextClassName, title: nextTitle });
       });
-  }, [children]);
+  }, [children, isPlain]);
 
   const handleCopy = async () => {
     const code = preRef.current?.textContent || "";
@@ -66,6 +72,21 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
       console.error("Failed to copy code:", error);
     }
   };
+
+  if (isPlain) {
+    return (
+      <pre
+        ref={preRef}
+        {...props}
+        className={cn(
+          "rounded-lg border border-border/70 bg-muted/30 p-3 text-[13px] font-mono leading-relaxed overflow-x-auto text-foreground",
+          props.className
+        )}
+      >
+        {children}
+      </pre>
+    );
+  }
 
   return (
     <div className="group relative rounded-xl overflow-hidden border border-border">
@@ -90,7 +111,7 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
           {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
         </Button>
         {html && (
-          <div className="p-3">
+          <div className="p-2">
             <code
               className={`shiki ${className}`}
               dangerouslySetInnerHTML={{ __html: html }}
@@ -99,7 +120,7 @@ export function CodeBlock({ children, ...props }: CodeBlockProps) {
         )}
 
         {!html && (
-          <div className="p-4">
+          <div className="p-2">
             {children}
           </div>
         )}

@@ -1,0 +1,63 @@
+<svg viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="760" height="320" fill="#ffffff" stroke="#d0d0d0" stroke-width="1"/>
+  <defs>
+    <marker id="ag-arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#444"/>
+    </marker>
+  </defs>
+  <text x="380" y="26" text-anchor="middle" font-size="16" font-weight="600" fill="#111">Computing attention over non-contiguous blocks</text>
+  <text x="380" y="44" text-anchor="middle" font-size="12" fill="#666">Request A's logical sequence lives in physical blocks 0 and 6, not next to each other</text>
+
+  <!-- logical view -->
+  <text x="40" y="78" font-size="12.5" font-weight="600" fill="#111">Logical view (Req A)</text>
+  <rect x="40" y="86" width="70" height="50" fill="#cfe3ff" stroke="#111" stroke-width="1.5"/>
+  <text x="75" y="116" text-anchor="middle" font-size="12">logical 0</text>
+  <rect x="118" y="86" width="70" height="50" fill="#cfe3ff" stroke="#111" stroke-width="1.5"/>
+  <text x="153" y="116" text-anchor="middle" font-size="12">logical 1</text>
+
+  <!-- paging table -->
+  <g transform="translate(250,86)">
+    <rect x="0" y="0" width="170" height="50" fill="#fff7e0" stroke="#111" stroke-width="1.5"/>
+    <text x="85" y="20" text-anchor="middle" font-size="11.5" font-weight="600">paging table (Req A)</text>
+    <text x="85" y="38" text-anchor="middle" font-size="12" font-family="Menlo, Consolas, monospace">0 → blk 0, 1 → blk 6</text>
+  </g>
+
+  <line x1="188" y1="111" x2="250" y2="111" stroke="#444" stroke-width="1.5" marker-end="url(#ag-arrow)"/>
+
+  <!-- physical pool -->
+  <text x="460" y="78" font-size="12.5" font-weight="600" fill="#111">Physical block pool</text>
+  <g transform="translate(460,86)">
+    <rect x="0" y="0" width="240" height="60" fill="none" stroke="#999" stroke-width="1"/>
+    <rect x="2" y="2" width="26" height="26" fill="#cfe3ff" stroke="#111"/>
+    <text x="15" y="19" text-anchor="middle" font-size="9">0</text>
+    <rect x="30" y="2" width="26" height="26" fill="#f2f2f2" stroke="#bbb"/>
+    <rect x="58" y="2" width="26" height="26" fill="#f2f2f2" stroke="#bbb"/>
+    <rect x="86" y="2" width="26" height="26" fill="#f2f2f2" stroke="#bbb"/>
+    <rect x="114" y="2" width="26" height="26" fill="#f2f2f2" stroke="#bbb"/>
+    <rect x="142" y="2" width="26" height="26" fill="#f2f2f2" stroke="#bbb"/>
+    <rect x="170" y="2" width="26" height="26" fill="#cfe3ff" stroke="#111"/>
+    <text x="183" y="19" text-anchor="middle" font-size="9">6</text>
+    <rect x="198" y="2" width="26" height="26" fill="#f2f2f2" stroke="#bbb"/>
+    <rect x="2" y="32" width="26" height="26" fill="#f2f2f2" stroke="#bbb"/>
+    <rect x="30" y="32" width="26" height="26" fill="#f2f2f2" stroke="#bbb"/>
+    <rect x="58" y="32" width="26" height="26" fill="#f2f2f2" stroke="#bbb"/>
+    <rect x="86" y="32" width="26" height="26" fill="#f2f2f2" stroke="#bbb"/>
+    <rect x="114" y="32" width="26" height="26" fill="#f2f2f2" stroke="#bbb"/>
+    <rect x="142" y="32" width="26" height="26" fill="#f2f2f2" stroke="#bbb"/>
+    <rect x="170" y="32" width="26" height="26" fill="#f2f2f2" stroke="#bbb"/>
+    <rect x="198" y="32" width="26" height="26" fill="#f2f2f2" stroke="#bbb"/>
+  </g>
+  <line x1="420" y1="111" x2="460" y2="111" stroke="#444" stroke-width="1.5" marker-end="url(#ag-arrow)"/>
+
+  <!-- gather arrow down -->
+  <line x1="475" y1="146" x2="475" y2="190" stroke="#444" stroke-width="1.5" marker-end="url(#ag-arrow)"/>
+  <line x1="643" y1="146" x2="643" y2="190" stroke="#444" stroke-width="1.5" marker-end="url(#ag-arrow)"/>
+
+  <!-- gathered K/V box -->
+  <rect x="280" y="196" width="400" height="50" fill="#ffd0d0" stroke="#111" stroke-width="1.5"/>
+  <text x="480" y="226" text-anchor="middle" font-size="13">gathered K/V for Req A (blocks 0 + 6, fetched non-contiguously)</text>
+
+  <line x1="480" y1="246" x2="480" y2="270" stroke="#444" stroke-width="1.5" marker-end="url(#ag-arrow)"/>
+  <rect x="330" y="276" width="300" height="36" fill="#e6f0ff" stroke="#111" stroke-width="1.5"/>
+  <text x="480" y="299" text-anchor="middle" font-size="13" font-family="Menlo, Consolas, monospace">softmax(QK^T)V, same as always</text>
+</svg>

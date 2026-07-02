@@ -1,0 +1,44 @@
+<svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="760" height="240" fill="#ffffff" stroke="#d0d0d0" stroke-width="1"/>
+  <text x="380" y="32" text-anchor="middle" font-size="16" font-weight="600" fill="#111">Attention: two of these tensors scale with s squared</text>
+
+  <!-- x -->
+  <rect x="24" y="86" width="104" height="56" rx="6" fill="#cfe3ff" stroke="#111" stroke-width="1.5"/>
+  <text x="76" y="110" text-anchor="middle" font-size="13" font-weight="600" fill="#111">x</text>
+  <text x="76" y="128" text-anchor="middle" font-size="10" fill="#333">bsh</text>
+  <!-- Q,K,V -->
+  <rect x="168" y="86" width="104" height="56" rx="6" fill="#cfe3ff" stroke="#111" stroke-width="1.5"/>
+  <text x="220" y="110" text-anchor="middle" font-size="13" font-weight="600" fill="#111">Q, K, V</text>
+  <text x="220" y="128" text-anchor="middle" font-size="10" fill="#333">3 bsh</text>
+  <!-- scores (s x s) -->
+  <rect x="312" y="78" width="104" height="72" rx="6" fill="#ffe6b3" stroke="#111" stroke-width="1.5"/>
+  <text x="364" y="106" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">scores</text>
+  <text x="364" y="124" text-anchor="middle" font-size="9.5" fill="#333">b &#183; n_heads &#183; s&#178;</text>
+  <!-- weights (s x s) -->
+  <rect x="456" y="78" width="104" height="72" rx="6" fill="#ffe6b3" stroke="#111" stroke-width="1.5"/>
+  <text x="508" y="106" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">weights</text>
+  <text x="508" y="124" text-anchor="middle" font-size="9.5" fill="#333">b &#183; n_heads &#183; s&#178;</text>
+  <!-- Z -->
+  <rect x="600" y="86" width="104" height="56" rx="6" fill="#cfe3ff" stroke="#111" stroke-width="1.5"/>
+  <text x="652" y="110" text-anchor="middle" font-size="13" font-weight="600" fill="#111">Z</text>
+  <text x="652" y="128" text-anchor="middle" font-size="10" fill="#333">bsh</text>
+
+  <!-- arrows -->
+  <line x1="128" y1="114" x2="164" y2="114" stroke="#111" stroke-width="1.5" marker-end="url(#b)"/>
+  <text x="146" y="106" text-anchor="middle" font-size="9.5" fill="#555">proj</text>
+  <line x1="272" y1="114" x2="308" y2="114" stroke="#111" stroke-width="1.5" marker-end="url(#b)"/>
+  <text x="290" y="106" text-anchor="middle" font-size="9" fill="#555">QKt</text>
+  <line x1="416" y1="114" x2="452" y2="114" stroke="#111" stroke-width="1.5" marker-end="url(#b)"/>
+  <text x="434" y="104" text-anchor="middle" font-size="8.5" fill="#555">softmax</text>
+  <line x1="560" y1="114" x2="596" y2="114" stroke="#111" stroke-width="1.5" marker-end="url(#b)"/>
+  <text x="578" y="106" text-anchor="middle" font-size="9.5" fill="#555">&#183;V</text>
+
+  <text x="380" y="188" text-anchor="middle" font-size="12" fill="#333">blue tensors add up to  <tspan font-weight="600" fill="#111">11 bsh</tspan>   /   orange tensors add up to  <tspan font-weight="600" fill="#a2670a">5 &#183; b &#183; n_heads &#183; s&#178;</tspan></text>
+  <text x="380" y="210" text-anchor="middle" font-size="12" fill="#555">the orange term is the self-attention matrix, one s by s block per head. this is why long context hurts.</text>
+
+  <defs>
+    <marker id="b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#111"/>
+    </marker>
+  </defs>
+</svg>

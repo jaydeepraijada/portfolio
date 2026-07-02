@@ -1,0 +1,193 @@
+---
+title: "5D Parallelism #1: What needs to be stored in the GPU during LLM training?"
+publishedAt: "2026-07-02"
+author: "Jaydeep Raijada"
+summary: "The first post in a series building up to 5D parallelism. Before we split a model across many GPUs, let's figure out what actually fills a single GPU: parameters, gradients, optimizer states, and activations, which usually end up taking the most."
+image: ""
+---
+
+This is the first post in a series building up to **5D parallelism**, the set of techniques for training models across multiple GPUs.
+
+We'll start with one GPU. Before we can talk about splitting a model across many of them, we need to know what fills up one of them in the first place.
+
+So, what needs to be stored in the GPU during training? Four things:
+
+1. Parameters
+2. Gradients
+3. Optimizer states
+4. Activations (you need the input to each layer to compute the gradient of the loss with respect to it)
+
+Let's try to calculate how much memory each one takes.
+
+---
+
+## Counting the parameters
+
+We'll assume FP32 for now, so every scalar is 4 bytes. If the model has `P` parameters, the weights take `4P` bytes. So the whole game is finding `P`.
+
+Notation: `v` is vocab size, `h` is embedding dimension, `L` is the number of transformer blocks.
+
+**A) Input block**
+
+| Component | Parameters |
+| --- | --- |
+| Token embeddings | `v · h` |
+| Positional embeddings | `s · h` |
+
+**B) Each transformer block**
+
+| Component | Parameters |
+| --- | --- |
+| LayerNorm 1 | `2h` (scale and shift per index) |
+| Multi-head attention | `4h²` (Wq, Wk, Wv, Wo) + `4h` (biases) |
+| LayerNorm 2 | `2h` |
+| Feed-forward network | `2 · 4h²` + `5h` (biases) |
+
+The FFN goes up `h -> 4h` and back down `4h -> h`, which is where the `2 · 4h²` comes from. Sum one block:
+
+```
+per block = 12h² + (2h + 4h + 2h + 5h)
+          = 12h² + 13h
+```
+
+**C) Output block**
+
+| Component | Parameters |
+| --- | --- |
+| Final LayerNorm | `2h` |
+| Output projection | `v · h` (dropped with weight tying) |
+
+We won't count positional embeddings (most modern architectures use RoPE, which injects position inside attention instead of a learned table) or the output projection (weight tying reuses the token embedding matrix). What's left:
+
+```
+P = v·h  +  L · (12h² + 13h)  +  2h
+```
+
+Three things to notice here:
+
+1. `P` does not depend on batch size.
+2. `P` does not depend on sequence length.
+3. The `12Lh²` term dominates for any real model. Parameter count is basically depth times width squared.
+
+Gradients and optimizer states are just multiples of `P`, so they don't depend on batch size or sequence length either. Activations are the one thing that does.
+
+---
+
+## Parameters, gradients, and optimizer states
+
+Everything here is just a multiple of `P`. In FP32:
+
+| Component | Per parameter | Total |
+| --- | --- | --- |
+| Parameters | 4 bytes | `4P` |
+| Gradients | 4 bytes | `4P` |
+| Optimizer states (Adam) | 8 bytes | `8P` |
+
+Adam is why the optimizer is the biggest chunk here. It keeps a running mean (momentum) and variance for every parameter, so that's `2 × 4 = 8` bytes each. Add it up and together they cost **`16P` bytes**, four times the weights on their own.
+
+![Parameters, gradients and optimizer states in FP32 add up to a fixed 16P, while activations sit separately and grow with batch and sequence length](/blog/gpu-memory/01-model-state.svg)
+
+So `16P` is fixed. It doesn't change with batch size or sequence length. Activations do, so let's count those next.
+
+---
+
+## What about activations?
+
+An activation is any intermediate value from the forward pass that we keep around because the backward pass needs it. To compute the gradient for a layer, we need the values that flowed through it, so we hold onto them until the backward pass is done.
+
+Unlike those three, activation memory depends on **batch size** and **sequence length**. There are three main places activations pile up: the feed-forward networks, the attention blocks, and the layer norms. Let's count the first two carefully.
+
+New notation from here: `b` is batch size, `s` is sequence length, `n_heads` is the number of attention heads. And we switch to FP16 (2 bytes per value), since that's what activations are actually stored in.
+
+### Feed-forward network
+
+The forward path looks like this:
+
+```
+x  ─Wup─▶  h  ─ReLU─▶  h_act  ─Wdown─▶  out
+```
+
+The tensors we have to keep to compute gradients are `x`, `h` and `h_act`:
+
+| Tensor | Size (elements) |
+| --- | --- |
+| `x` | `b · s · h` |
+| `h` | `b · s · 4h` |
+| `h_act` | `b · s · 4h` |
+
+That's `9 · bsh` elements. At 2 bytes each, `18 · bsh`. Add the dropout mask (`bsh`) and the FFN comes to:
+
+```
+FFN activations = 19 · bsh
+```
+
+![FFN forward pass, showing that x, h and h_act are the three tensors kept for the backward pass, totalling 19 bsh bytes](/blog/gpu-memory/02-ffn-activations.svg)
+
+### Attention block
+
+Attention has more moving parts. `x` gets projected into `Q`, `K`, `V`; we do `QKᵀ` to get scores, softmax them into weights, multiply by `V` to get `Z`, then project through `Wo`. The tensors we store:
+
+| Tensor | Size (elements) |
+| --- | --- |
+| `x` | `b · s · h` |
+| `Q`, `K`, `V` | `3 · bsh` |
+| attention scores | `b · n_heads · s · s` |
+| attention weights | `b · n_heads · s · s` |
+| `Z` | `b · s · h` |
+
+Count the `bsh`-shaped tensors (`x`, `Q`, `K`, `V`, `Z` = `5bsh`), plus the two `s²`-shaped score and weight tensors, at 2 bytes each, plus the attention and softmax dropout. It works out to:
+
+```
+attention activations = 11 · bsh  +  5 · b·n_heads·s²
+```
+
+![Attention block tensors: the blue ones total 11 bsh, the orange scores and weights matrices total 5 b n_heads s squared, which is the term that grows with sequence length](/blog/gpu-memory/03-attention-activations.svg)
+
+The `s²` term comes from the attention matrix, one `s × s` block per head. This is why longer sequences get expensive.
+
+### Putting a layer together
+
+Add the FFN, the attention block, and the two layer norms (`4bsh` at FP16). Factor out `sbh`:
+
+```
+per layer = sbh · (34 + 5·n_heads·s / h)
+```
+
+And across the whole model of `L` blocks:
+
+```
+Total activation memory = L · sbh · (34 + 5·n_heads·s / h)
+```
+
+This tells us why activations are the annoying term:
+
+1. It's not fixed for a model. Unlike `16P`, it changes with the batch size and sequence length you pick.
+2. It scales linearly with batch size. Double the batch, double the activations.
+3. It scales quadratically with sequence length. That extra `s` inside `5·n_heads·s/h` comes straight from attention. The FFN grows linearly with `s`, attention grows with `s²`.
+
+![Activation memory grows linearly with batch size and quadratically with sequence length](/blog/gpu-memory/04-scaling.svg)
+
+Push the batch size or sequence length far enough and activation memory can match or exceed the parameters, gradients and optimizer states combined. On a single GPU, activations are usually the first thing to run out of memory.
+
+![Memory breakdown vs sequence length for Llama-3.1 8B, 70B and 405B at batch size 1: parameters, gradients and optimizer states stay flat while activations grow rapidly past a few thousand tokens and dominate at 16k](/blog/gpu-memory/05-llama-memory-breakdown.png)
+
+You can see it directly for the Llama-3.1 models above at batch size 1: the parameter, gradient and optimizer bars barely move across sequence lengths, while activations stay small up to a few thousand tokens and then take over, driven by the `s²` term in attention.
+
+---
+
+## So how do we deal with this?
+
+We now have both halves of the picture:
+
+```
+Params + grads + optimizer = 16P                             (fixed)
+Activations                = L · sbh · (34 + 5·n_heads·s/h)  (varies with b and s)
+```
+
+Getting the most out of one GPU means shrinking these two terms:
+
+- **Activation recomputation** drops most activations in the forward pass and recomputes them in the backward pass, trading compute for the `34 + 5·n_heads·s/h` term.
+- **Gradient accumulation** keeps `b` small per step while still training at a large effective batch size.
+- **Mixed precision** lowers the bytes per parameter on the `16P` side.
+
+We'll cover these in the next few posts. After that, we bring in a second GPU and start on parallelism.

@@ -1,0 +1,24 @@
+<svg viewBox="0 0 760 260" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="760" height="260" fill="#ffffff" stroke="#d0d0d0" stroke-width="1"/>
+  <text x="380" y="32" text-anchor="middle" font-size="16" font-weight="600" fill="#111">How activation memory grows</text>
+
+  <!-- left plot: batch size, linear -->
+  <text x="205" y="64" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">vs batch size b</text>
+  <line x1="70" y1="90" x2="70" y2="210" stroke="#111" stroke-width="1.5"/>
+  <line x1="70" y1="210" x2="340" y2="210" stroke="#111" stroke-width="1.5"/>
+  <line x1="70" y1="205" x2="330" y2="100" stroke="#2b7de0" stroke-width="2.5"/>
+  <text x="205" y="230" text-anchor="middle" font-size="11" fill="#555">b</text>
+  <text x="52" y="150" text-anchor="middle" font-size="11" fill="#555" transform="rotate(-90 52 150)">memory</text>
+  <text x="255" y="150" text-anchor="middle" font-size="11" fill="#2b7de0" font-weight="600">linear</text>
+
+  <!-- right plot: sequence length, quadratic -->
+  <text x="555" y="64" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">vs sequence length s</text>
+  <line x1="420" y1="90" x2="420" y2="210" stroke="#111" stroke-width="1.5"/>
+  <line x1="420" y1="210" x2="690" y2="210" stroke="#111" stroke-width="1.5"/>
+  <path d="M420,208 Q600,188 680,96" fill="none" stroke="#e0692b" stroke-width="2.5"/>
+  <text x="555" y="230" text-anchor="middle" font-size="11" fill="#555">s</text>
+  <text x="402" y="150" text-anchor="middle" font-size="11" fill="#555" transform="rotate(-90 402 150)">memory</text>
+  <text x="600" y="150" text-anchor="middle" font-size="11" fill="#e0692b" font-weight="600">quadratic</text>
+
+  <text x="380" y="252" text-anchor="middle" font-size="11.5" fill="#333">Total = L &#183; sbh &#183; (34 + 5 &#183; n_heads &#183; s / h).  The extra s inside comes straight from attention.</text>
+</svg>

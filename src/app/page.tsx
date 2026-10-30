@@ -1,8 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
+import { allPosts } from "content-collections";
 import Link from "next/link";
 import Markdown from "react-markdown";
 import { ArrowUpRight } from "lucide-react";
 import { DATA } from "@/data/resume";
+import { formatDate } from "@/lib/utils";
 
 const socials = [
   { label: "github", url: DATA.contact.social.GitHub.url },
@@ -13,6 +15,17 @@ const socials = [
 ];
 
 const skillGroups: { label: string; items: string[] }[] = [
+  {
+    label: "Distributed training & inference",
+    items: [
+      "5D Parallelism (DP/TP/PP/CP/EP)",
+      "vLLM",
+      "PagedAttention",
+      "Continuous Batching",
+      "KV Cache Management",
+      "Inference Optimization",
+    ],
+  },
   {
     label: "Post-training & alignment",
     items: [
@@ -48,7 +61,7 @@ const skillGroups: { label: string; items: string[] }[] = [
     items: [
       "VLMs",
       "Vision Transformers (ViT, Swin, DeiT, DETR, PaliGemma)",
-      "Audio AI (STT, TTS)",
+      "Voice AI (STT, TTS)",
     ],
   },
   {
@@ -64,27 +77,32 @@ const skillGroups: { label: string; items: string[] }[] = [
     ],
   },
   {
-    label: "Distributed training & inference",
-    items: [
-      "5D Parallelism (DP/TP/PP/CP/EP)",
-      "vLLM",
-      "PagedAttention",
-      "Continuous Batching",
-      "KV Cache Management",
-      "Inference Optimization",
-    ],
-  },
-  {
     label: "Languages & analytics",
     items: ["Python", "SQL", "Pandas", "Power BI"],
   },
 ];
 
+const writing = [
+  ...DATA.writing,
+  ...allPosts.map((post) => ({
+    title: post.title,
+    href: `/blog/${post._meta.path.replace(/\.mdx$/, "")}`,
+    publishedAt: post.publishedAt,
+    source: "",
+  })),
+].sort((a, b) => (new Date(a.publishedAt) > new Date(b.publishedAt) ? -1 : 1));
+
+const markdownBody =
+  "prose prose-sm max-w-none text-[15px] leading-relaxed text-foreground/75 prose-a:text-foreground prose-strong:text-foreground prose-strong:font-medium prose-p:my-0 prose-ul:mt-2 prose-ul:mb-0 prose-ul:pl-4 prose-li:my-1.5 prose-li:pl-1 text-pretty";
+
+const entryHeader =
+  "flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4";
+
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-5">
+    <h2 className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-5">
       {children}
-    </div>
+    </h2>
   );
 }
 
@@ -160,14 +178,14 @@ export default function V2Page() {
 
         {/* Hero */}
         <section className="mb-16">
-          <div className="flex items-start gap-6">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-6">
             <img
               src={DATA.avatarUrl}
               alt={DATA.name}
               className="size-20 rounded-full object-cover ring-1 ring-border shrink-0"
             />
             <div className="flex flex-col gap-3 min-w-0">
-              <h1 className="text-4xl sm:text-5xl font-medium tracking-tight leading-[1.05]">
+              <h1 className="font-display text-4xl sm:text-5xl font-medium tracking-tight leading-[1.05]">
                 Hi, I&apos;m Jaydeep
               </h1>
               <p className="text-[15px] leading-relaxed text-muted-foreground text-pretty">
@@ -196,13 +214,14 @@ export default function V2Page() {
                 </ExtLink>
               </div>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
-                {socials.map((s, i) => (
-                  <span key={s.label} className="flex items-center gap-x-4">
-                    {i > 0 && <span className="text-border">·</span>}
-                    <ExtLink href={s.url} className="text-muted-foreground hover:text-foreground decoration-transparent hover:decoration-foreground">
-                      {s.label}
-                    </ExtLink>
-                  </span>
+                {socials.map((s) => (
+                  <ExtLink
+                    key={s.label}
+                    href={s.url}
+                    className="text-muted-foreground hover:text-foreground decoration-transparent hover:decoration-foreground"
+                  >
+                    {s.label}
+                  </ExtLink>
                 ))}
               </div>
             </div>
@@ -212,97 +231,34 @@ export default function V2Page() {
         <div className="flex flex-col gap-14">
           {/* About */}
           <Section label="About">
-            <div className="prose prose-sm max-w-none text-[15px] leading-relaxed text-foreground/85 prose-a:text-foreground prose-a:underline prose-a:underline-offset-4 prose-a:decoration-foreground/30 hover:prose-a:decoration-foreground prose-strong:text-foreground">
+            <div className="prose prose-sm max-w-none text-[15px] leading-relaxed text-foreground/85 prose-a:text-foreground prose-a:underline prose-a:underline-offset-4 prose-a:decoration-foreground/30 hover:prose-a:decoration-foreground prose-strong:text-foreground prose-p:my-3">
               <Markdown>{DATA.summary}</Markdown>
             </div>
           </Section>
 
-          {/* Currently */}
-          <Section label="Currently">
-            {DATA.work.map((job) => (
-              <div key={job.company} className="flex flex-col gap-2">
-                <div className="flex items-baseline justify-between gap-4">
-                  <div className="text-[15px] text-foreground">
-                    <span className="font-medium">{job.title}</span>{" "}
-                    <span className="text-muted-foreground">at</span>{" "}
-                    <ExtLink href={job.href}>{job.company}</ExtLink>
-                    <span className="text-muted-foreground">
-                      {" "}
-                      · {job.location}
-                    </span>
-                  </div>
-                  <div className="text-xs tabular-nums text-muted-foreground shrink-0">
-                    {job.start} – {job.end}
-                  </div>
-                </div>
-                <p className="text-[15px] leading-relaxed text-foreground/75 text-pretty">
-                  {job.description}
-                </p>
-              </div>
-            ))}
-          </Section>
-
-          {/* Research */}
-          <Section label="Research">
-            <p className="text-[15px] leading-relaxed text-foreground/75 text-pretty mb-6">
-              One research program, two studies: on-policy distillation and
-              forgetting in small models. What survives when you shrink the
-              student, and what to do when it doesn&apos;t.
-            </p>
-            <div className="flex flex-col gap-6">
-              {DATA.research.map((r) => (
-                <article
-                  key={r.title}
-                  className="flex flex-col gap-3 rounded-2xl border border-border/70 bg-foreground/[0.02] p-5 sm:p-6 transition-colors hover:border-foreground/25"
-                >
-                  <div className="flex items-baseline justify-between gap-4">
-                    <h3 className="font-display text-lg font-medium text-foreground text-pretty">
-                      {r.title}
-                    </h3>
+          {/* Experience */}
+          <Section label="Experience">
+            <div className="flex flex-col gap-10">
+              {DATA.work.map((job) => (
+                <div key={job.company} className="flex flex-col gap-2">
+                  <div className={entryHeader}>
+                    <div className="text-[15px] text-foreground">
+                      <span className="font-medium">{job.title}</span>{" "}
+                      <span className="text-muted-foreground">at</span>{" "}
+                      <ExtLink href={job.href}>{job.company}</ExtLink>
+                      <span className="text-muted-foreground">
+                        {" "}
+                        · {job.location}
+                      </span>
+                    </div>
                     <div className="text-xs tabular-nums text-muted-foreground shrink-0">
-                      {r.dates}
+                      {job.start} – {job.end}
                     </div>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 text-xs">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-foreground/[0.04] border border-border/80 px-2.5 py-0.5 text-muted-foreground">
-                      {r.dates.includes("Present") && (
-                        <span className="relative flex size-1.5" aria-hidden>
-                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/60" />
-                          <span className="relative inline-flex size-1.5 rounded-full bg-emerald-500" />
-                        </span>
-                      )}
-                      {r.status}
-                    </span>
-                    <span className="inline-flex items-center rounded-full border border-border/80 px-2.5 py-0.5 text-muted-foreground">
-                      {r.model}
-                    </span>
-                    {r.target && (
-                      <span className="inline-flex items-center rounded-full border border-border/80 px-2.5 py-0.5 text-muted-foreground">
-                        Target: <span className="text-foreground/80 ml-1">{r.target}</span>
-                      </span>
-                    )}
+                  <div className={markdownBody}>
+                    <Markdown>{job.description}</Markdown>
                   </div>
-                  <p className="text-[15px] leading-relaxed text-foreground/75 text-pretty">
-                    {r.description}
-                  </p>
-                  <p className="border-l-2 border-foreground/15 pl-3 text-[15px] leading-relaxed text-foreground/85 text-pretty">
-                    <span className="font-medium text-foreground">
-                      Hypothesis:{" "}
-                    </span>
-                    {r.hypothesis}
-                  </p>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-                    {r.links.map((l) => (
-                      <ExtLink
-                        key={l.href}
-                        href={l.href}
-                        className="text-muted-foreground hover:text-foreground"
-                      >
-                        {l.type} ↗
-                      </ExtLink>
-                    ))}
-                  </div>
-                </article>
+                </div>
               ))}
             </div>
           </Section>
@@ -312,7 +268,7 @@ export default function V2Page() {
             <div className="flex flex-col gap-10">
               {DATA.projects.map((p) => (
                 <article key={p.title} className="flex flex-col gap-3">
-                  <div className="flex items-baseline justify-between gap-4">
+                  <div className={entryHeader}>
                     <h3 className="font-display text-lg font-medium text-foreground tracking-tight">
                       {p.href ? (
                         <ExtLink
@@ -329,7 +285,7 @@ export default function V2Page() {
                       {p.dates}
                     </div>
                   </div>
-                  <div className="prose prose-sm max-w-none text-[15px] leading-relaxed text-foreground/75 prose-strong:text-foreground prose-strong:font-medium prose-p:my-0 text-pretty">
+                  <div className={markdownBody}>
                     <Markdown>{p.description}</Markdown>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
@@ -361,18 +317,101 @@ export default function V2Page() {
             </div>
           </Section>
 
+          {/* Research */}
+          <Section label="Research">
+            <p className="text-[15px] leading-relaxed text-foreground/75 text-pretty mb-6">
+              One research program, two studies: on-policy distillation and
+              forgetting in small models. What survives when you shrink the
+              student, and what to do when it doesn&apos;t.
+            </p>
+            <div className="flex flex-col gap-6">
+              {DATA.research.map((r) => (
+                <article
+                  key={r.title}
+                  className="flex flex-col gap-3 rounded-2xl border border-border/70 bg-foreground/[0.02] p-5 sm:p-6"
+                >
+                  <div className={entryHeader}>
+                    <h3 className="font-display text-lg font-medium text-foreground text-pretty">
+                      {r.title}
+                    </h3>
+                    <div className="text-xs tabular-nums text-muted-foreground shrink-0">
+                      {r.dates}
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-foreground/[0.04] border border-border/80 px-2.5 py-0.5 text-muted-foreground">
+                      {r.dates.includes("Present") && (
+                        <span
+                          className="size-1.5 rounded-full bg-emerald-500"
+                          aria-hidden
+                        />
+                      )}
+                      {r.status}
+                    </span>
+                    <span className="inline-flex items-center rounded-full border border-border/80 px-2.5 py-0.5 text-muted-foreground">
+                      {r.model}
+                    </span>
+                    {r.target && (
+                      <span className="inline-flex items-center rounded-full border border-border/80 px-2.5 py-0.5 text-muted-foreground">
+                        Target: <span className="text-foreground/80 ml-1">{r.target}</span>
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[15px] leading-relaxed text-foreground/75 text-pretty">
+                    {r.description}
+                  </p>
+                  <p className="border-l-2 border-foreground/15 pl-3 text-[15px] leading-relaxed text-foreground/85 text-pretty">
+                    <span className="font-medium text-foreground">
+                      Hypothesis:{" "}
+                    </span>
+                    {r.hypothesis}
+                  </p>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                    {r.links.map((l) => (
+                      <ExtLink
+                        key={l.href}
+                        href={l.href}
+                        className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+                      >
+                        {l.type}
+                        <ArrowUpRight className="size-3" aria-hidden />
+                      </ExtLink>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </Section>
+
           {/* Writing */}
           <Section label="Writing">
-            <p className="text-[15px] leading-relaxed text-foreground/85 text-pretty">
-              Notes on post-training, RL environments, and small-model
-              experiments. Read on{" "}
+            <ul className="flex flex-col gap-4">
+              {writing.map((w) => (
+                <li key={w.href} className={entryHeader}>
+                  <div className="text-[15px] text-foreground">
+                    <ExtLink href={w.href}>{w.title}</ExtLink>
+                    {w.source && (
+                      <span className="text-muted-foreground">
+                        {" "}
+                        · {w.source}
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xs tabular-nums text-muted-foreground shrink-0">
+                    {formatDate(w.publishedAt)}
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <p className="text-[15px] leading-relaxed text-foreground/75 text-pretty mt-6">
+              More on{" "}
               <Link
                 href="/blog"
                 className="underline underline-offset-4 decoration-foreground/30 hover:decoration-foreground"
               >
                 the blog
               </Link>{" "}
-              or{" "}
+              and{" "}
               <ExtLink href={DATA.contact.social.Substack.url}>
                 Substack
               </ExtLink>
@@ -409,19 +448,9 @@ export default function V2Page() {
           {/* Contact */}
           <Section label="Get in touch">
             <p className="text-[15px] leading-relaxed text-foreground/85 text-pretty">
-              The fastest way to reach me is by email at{" "}
+              Email is the fastest way to reach me:{" "}
               <ExtLink href={`mailto:${DATA.contact.email}`}>
                 {DATA.contact.email}
-              </ExtLink>
-              . Or find me on{" "}
-              <ExtLink href={DATA.contact.social.X.url}>X</ExtLink>,{" "}
-              <ExtLink href={DATA.contact.social.GitHub.url}>GitHub</ExtLink>,{" "}
-              <ExtLink href={DATA.contact.social.HuggingFace.url}>
-                Hugging Face
-              </ExtLink>
-              , and{" "}
-              <ExtLink href={DATA.contact.social.LinkedIn.url}>
-                LinkedIn
               </ExtLink>
               . Hiring for a project? See what I build on the{" "}
               <Link

@@ -286,10 +286,8 @@ export default function ServicesPage() {
               ship them publicly. I trained a 1.5B RL safety monitor to 0.893
               AUROC (Top 100 at the Hugging Face × Meta OpenEnv Hackathon),
               domain-adapted a small model for a 20% perplexity drop, and built
-              a full LLM training stack by hand. I&apos;ve also shipped this
-              end-to-end: TenderIQ, a production RAG system with cited
-              verdicts, OCR fallbacks, and a human-review queue, and an
-              LLM-based customer-feedback pipeline running in production at a
+              a full LLM training stack by hand. I&apos;ve also shipped to
+              production: an LLM-based customer-feedback pipeline running at a
               Fortune 50 retailer. That depth is what you get on your project.
             </p>
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground mt-4">

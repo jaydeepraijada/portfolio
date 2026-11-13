@@ -116,6 +116,28 @@ export const DATA = {
       ],
     },
     {
+      title: "Reproducing CLM-8B: a System One model",
+      href: "https://github.com/jaydeepraijada/clm-experiments",
+      dates: "November 2026",
+      description:
+        "A reproduction of CLM-8B (Contrastive Language Models, Kwok et al., Stanford and NVIDIA Research). The model scores options instead of generating text: frozen Qwen3-8B hidden states feed two small trained heads (about 18.9M parameters), and cosine similarity ranks each option. The full pre-training → mid-training → post-training pipeline ran on Modal for about **$82**.\n\n- **Tricky Q&A:** **69.0%** after post-training, against 68.5% published (raw Qwen3-8B with no heads: 14.4%).\n- **DeepSWE verifier:** **30.8/38** averaged over 5 seeds, a tie with the authors' released head (31.0).\n- **T-Rex game agent:** latency matches (17.1 ms), but planner agreement is far behind (2.7% vs 65.3%). The gap traces to the post-training data recipe, which isn't public, and closing it is the next experiment.",
+      technologies: [
+        "Contrastive Learning",
+        "InfoNCE",
+        "Hard Negatives",
+        "Qwen3-8B",
+        "Agents",
+        "Modal",
+        "Reproduction",
+      ],
+      links: [
+        {
+          type: "GitHub",
+          href: "https://github.com/jaydeepraijada/clm-experiments",
+        },
+      ],
+    },
+    {
       title: "SHADE-GYM",
       href: "https://github.com/jaydeepraijada/SHADE-GYM",
       dates: "April 2026",
@@ -143,15 +165,16 @@ export const DATA = {
       ],
     },
     {
-      title: "Post-Training Pipeline (CPT → SFT → DPO)",
+      title: "Post-Training Pipeline (CPT → SFT → DPO → RL)",
       href: "https://github.com/jaydeepraijada/post-training-experiments",
-      dates: "May 2026",
+      dates: "May – November 2026",
       description:
-        "The full post-training stack, run end to end on SmolLM-135M with each stage measured. All checkpoints are on HuggingFace.\n\n- **CPT:** QLoRA on 138 arXiv ML papers. On held-out papers: **−20.1% perplexity** (22.97 to 18.36), **+25.4% ROUGE-L**, **+37.5% BLEU**. Rank saturates at r≥16, so the data is the bottleneck, not the rank.\n- **SFT:** instruction tuning on 300K pairs generated from arXiv papers (7 task types, structured decoding via Outlines), with ChatML and response-only loss masking.\n- **DPO:** preference alignment on 151K LLM-judged pairs (β=0.1). Held-out reward accuracy rose from **0.50 to 0.72** while generation diversity held, so no mode collapse.",
+        "The full post-training stack, run end to end on SmolLM-135M with each stage measured. All checkpoints are on HuggingFace.\n\n- **CPT:** QLoRA on 138 arXiv ML papers. On held-out papers: **−20.1% perplexity** (22.97 to 18.36), **+25.4% ROUGE-L**, **+37.5% BLEU**. Rank saturates at r≥16, so the data is the bottleneck, not the rank.\n- **SFT:** instruction tuning on 300K pairs generated from arXiv papers (7 task types, structured decoding via Outlines), with ChatML and response-only loss masking.\n- **DPO:** preference alignment on 151K LLM-judged pairs (β=0.1). Held-out reward accuracy rose from **0.50 to 0.72** while generation diversity held, so no mode collapse.\n- **RL:** GRPO for 24 hours on an H100. Correct output format went from **95.7%** (DPO) to **99.2%**, but answer quality stayed about flat: format made up most of the reward, and a blind LLM judge's preference for the late checkpoint (54.3% ± 6.1) wasn't significant. Next is penalising claims the source passage doesn't support.",
       technologies: [
         "CPT",
         "SFT",
         "DPO",
+        "GRPO",
         "Preference Optimization",
         "LoRA / QLoRA",
         "Unsloth",
@@ -162,6 +185,10 @@ export const DATA = {
         {
           type: "GitHub",
           href: "https://github.com/jaydeepraijada/post-training-experiments",
+        },
+        {
+          type: "RL Model",
+          href: "https://huggingface.co/JaydeepR/SmolLM-135M-neuraltxt-grpo-v1",
         },
         {
           type: "DPO Model",
@@ -258,6 +285,27 @@ export const DATA = {
         {
           type: "GitHub",
           href: "https://github.com/jaydeepraijada/TenderIQ",
+        },
+      ],
+    },
+    {
+      title: "torch-feather",
+      href: "https://github.com/jaydeepraijada/torch-feather",
+      dates: "October 2026 – Present",
+      description:
+        "A distributed training framework built from scratch, modelled on PyTorch's torchtitan, to learn how large-scale LLM training is put together: model definition, data loading, config-driven training, and the parallelism layers that split a model across GPUs. DeepSeek-V3 is the first model it targets. So far it has the model (Multi-Head Latent Attention with weight absorption, YaRN RoPE scaling), a FineWeb streaming dataset with a stateful, resumable dataloader, and a trainer. **Work in progress:** pipeline parallelism is underway, and the other parallelism dimensions come next.",
+      technologies: [
+        "Distributed Training",
+        "Pipeline Parallelism",
+        "DeepSeek-V3",
+        "MLA",
+        "YaRN",
+        "PyTorch",
+      ],
+      links: [
+        {
+          type: "GitHub",
+          href: "https://github.com/jaydeepraijada/torch-feather",
         },
       ],
     },

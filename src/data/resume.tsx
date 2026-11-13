@@ -116,6 +116,27 @@ export const DATA = {
       ],
     },
     {
+      title: "torch-feather",
+      href: "https://github.com/jaydeepraijada/torch-feather",
+      dates: "October 2026 – Present",
+      description:
+        "A distributed training framework built from scratch, modelled on PyTorch's torchtitan, to learn how large-scale LLM training is put together: model definition, data loading, config-driven training, and the parallelism layers that split a model across GPUs. DeepSeek-V3 is the first model it targets. So far it has the model (Multi-Head Latent Attention with weight absorption, YaRN RoPE scaling), a FineWeb streaming dataset with a stateful, resumable dataloader, and a trainer. **Work in progress:** pipeline parallelism is underway, and the other parallelism dimensions come next.",
+      technologies: [
+        "Distributed Training",
+        "Pipeline Parallelism",
+        "DeepSeek-V3",
+        "MLA",
+        "YaRN",
+        "PyTorch",
+      ],
+      links: [
+        {
+          type: "GitHub",
+          href: "https://github.com/jaydeepraijada/torch-feather",
+        },
+      ],
+    },
+    {
       title: "Reproducing CLM-8B: a System One model",
       href: "https://github.com/jaydeepraijada/clm-experiments",
       dates: "November 2026",
@@ -261,53 +282,6 @@ export const DATA = {
         "Ablation Design",
       ],
       links: [],
-    },
-    {
-      title: "TenderIQ",
-      href: "https://huggingface.co/spaces/JaydeepR/TenderIQ",
-      dates: "May 2026",
-      description:
-        "An end-to-end system for evaluating government tenders. It pulls criteria from the document with a DeepSeek LLM, retrieves matching evidence with sentence-transformers, and writes an explainable verdict that cites source clauses. OCR falls back from PyMuPDF to Tesseract to DeepSeek Vision when confidence drops below 65%, and borderline verdicts (confidence 0.55 to 0.80) go to a human review queue with a full audit trail.",
-      technologies: [
-        "RAG",
-        "DeepSeek",
-        "OCR",
-        "Streamlit",
-        "Human-in-the-loop",
-        "Production",
-        "Pydantic",
-      ],
-      links: [
-        {
-          type: "Demo",
-          href: "https://huggingface.co/spaces/JaydeepR/TenderIQ",
-        },
-        {
-          type: "GitHub",
-          href: "https://github.com/jaydeepraijada/TenderIQ",
-        },
-      ],
-    },
-    {
-      title: "torch-feather",
-      href: "https://github.com/jaydeepraijada/torch-feather",
-      dates: "October 2026 – Present",
-      description:
-        "A distributed training framework built from scratch, modelled on PyTorch's torchtitan, to learn how large-scale LLM training is put together: model definition, data loading, config-driven training, and the parallelism layers that split a model across GPUs. DeepSeek-V3 is the first model it targets. So far it has the model (Multi-Head Latent Attention with weight absorption, YaRN RoPE scaling), a FineWeb streaming dataset with a stateful, resumable dataloader, and a trainer. **Work in progress:** pipeline parallelism is underway, and the other parallelism dimensions come next.",
-      technologies: [
-        "Distributed Training",
-        "Pipeline Parallelism",
-        "DeepSeek-V3",
-        "MLA",
-        "YaRN",
-        "PyTorch",
-      ],
-      links: [
-        {
-          type: "GitHub",
-          href: "https://github.com/jaydeepraijada/torch-feather",
-        },
-      ],
     },
     {
       title: "The Open Post-Training Project (OPTP)",

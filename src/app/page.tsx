@@ -5,6 +5,17 @@ import Markdown from "react-markdown";
 import { ArrowUpRight } from "lucide-react";
 import { DATA } from "@/data/resume";
 import { formatDate } from "@/lib/utils";
+import { SectionNav } from "@/components/section-nav";
+
+const sections = [
+  { id: "about", label: "About" },
+  { id: "experience", label: "Experience" },
+  { id: "work", label: "Selected work" },
+  { id: "research", label: "Research" },
+  { id: "writing", label: "Writing" },
+  { id: "skills", label: "Skills" },
+  { id: "contact", label: "Get in touch" },
+] as const;
 
 const socials = [
   { label: "github", url: DATA.contact.social.GitHub.url },
@@ -107,14 +118,16 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 function Section({
+  id,
   label,
   children,
 }: {
+  id: string;
   label: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className="border-t border-border/70 pt-10">
+    <section id={id} className="scroll-mt-12 border-t border-border/70 pt-10">
       <SectionLabel>{label}</SectionLabel>
       {children}
     </section>
@@ -146,6 +159,7 @@ function ExtLink({
 export default function V2Page() {
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <SectionNav items={sections} />
       <div className="mx-auto max-w-2xl px-6 py-16 sm:py-24">
         {/* Header */}
         <header className="flex items-center justify-between mb-16">
@@ -230,14 +244,14 @@ export default function V2Page() {
 
         <div className="flex flex-col gap-14">
           {/* About */}
-          <Section label="About">
+          <Section id="about" label="About">
             <div className="prose prose-sm max-w-none text-[15px] leading-relaxed text-foreground/85 prose-a:text-foreground prose-a:underline prose-a:underline-offset-4 prose-a:decoration-foreground/30 hover:prose-a:decoration-foreground prose-strong:text-foreground prose-p:my-3">
               <Markdown>{DATA.summary}</Markdown>
             </div>
           </Section>
 
           {/* Experience */}
-          <Section label="Experience">
+          <Section id="experience" label="Experience">
             <div className="flex flex-col gap-10">
               {DATA.work.map((job) => (
                 <div key={job.company} className="flex flex-col gap-2">
@@ -264,7 +278,7 @@ export default function V2Page() {
           </Section>
 
           {/* Selected work */}
-          <Section label="Selected work">
+          <Section id="work" label="Selected work">
             <div className="flex flex-col gap-10">
               {DATA.projects.map((p) => (
                 <article key={p.title} className="flex flex-col gap-3">
@@ -318,7 +332,7 @@ export default function V2Page() {
           </Section>
 
           {/* Research */}
-          <Section label="Research">
+          <Section id="research" label="Research">
             <p className="text-[15px] leading-relaxed text-foreground/75 text-pretty mb-6">
               One research program, two studies: on-policy distillation and
               forgetting in small models. What survives when you shrink the
@@ -384,7 +398,7 @@ export default function V2Page() {
           </Section>
 
           {/* Writing */}
-          <Section label="Writing">
+          <Section id="writing" label="Writing">
             <ul className="flex flex-col gap-4">
               {writing.map((w) => (
                 <li key={w.href} className={entryHeader}>
@@ -420,7 +434,7 @@ export default function V2Page() {
           </Section>
 
           {/* Skills */}
-          <Section label="Skills">
+          <Section id="skills" label="Skills">
             <dl className="flex flex-col gap-5">
               {skillGroups.map((group) => (
                 <div
@@ -446,7 +460,7 @@ export default function V2Page() {
           </Section>
 
           {/* Contact */}
-          <Section label="Get in touch">
+          <Section id="contact" label="Get in touch">
             <p className="text-[15px] leading-relaxed text-foreground/85 text-pretty">
               Email is the fastest way to reach me:{" "}
               <ExtLink href={`mailto:${DATA.contact.email}`}>
